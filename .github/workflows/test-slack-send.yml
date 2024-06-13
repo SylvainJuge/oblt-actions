@@ -26,39 +26,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./slack/send
         id: slack-send
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: "#observablt-bots"
-          message: "Run something"
-
-      - name: validate thread-timestamp
-        run: test -n "${{ steps.slack-send.outputs.thread-timestamp }}"
-
-      - uses: ./slack/send
-        id: slack-reply
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: "#observablt-bots"
-          message: "Run soemthing else"
-          thread-timestamp: ${{ steps.slack-send.outputs.thread-timestamp || '' }}
-
-      - name: validate thread-timestamp
-        run: test -n "${{ steps.slack-reply.outputs.thread-timestamp }}"
-
-  test-multiline:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./slack/send
-        id: slack-send
         env:
           area_label: "SDH"
           notification_urgency: "High"
+          tests: '\n&*()'
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: "#observablt-bots"
           message: |
             :wave: Hello, @robots-ci! A new SDH issue has been cut for `${{ env.area_label }}`:
-            You are being notified as a fallback mechanism, as `${{ env.area_label }}` does not match any of my configured area labels.
+            You are being "notified${{env.tests}}%" as a fallback mechanism, as `${{ env.area_label }}` does not match any of my configured area labels.
 
             *${{ env.notification_urgency }} <${{ github.event.issue.html_url }}|#${{ github.event.issue.number }} - ${{ github.event.issue.title }}>*
